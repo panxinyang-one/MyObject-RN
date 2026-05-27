@@ -119,13 +119,19 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: ${{ secrets.SERVER_PORT || 22 }}
-          envs: DOCKERHUB_USERNAME,DOCKERHUB_TOKEN
+          debug: true
           script: |
-            set -e
+            set -euxo pipefail
             APP_DIR="${{ secrets.SERVER_APP_DIR }}"
             cd "$APP_DIR"
+            echo "=== server diag ==="
+            whoami
+            pwd
+            ls -la
+            echo "=== check env file ==="
+            test -f deploy/.env.prod || (echo "Missing deploy/.env.prod (copy deploy/env.prod.example -> deploy/.env.prod and fill secrets)"; exit 1)
             export DOCKER_IMAGE="${{ secrets.DOCKERHUB_USERNAME }}/myobject-rn-docker:latest"
-            echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+            echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
             docker compose -f deploy/docker-compose.prod.yml --env-file deploy/.env.prod pull api
             docker compose -f deploy/docker-compose.prod.yml --env-file deploy/.env.prod up -d
             sleep 5
