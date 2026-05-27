@@ -1,97 +1,84 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# 宿舍物证库
 
-# Getting Started
+React Native 移动端 + Express/MySQL 后端：给宿舍常用物品拍照建档，支持**本地模式**与**登录云同步**（Docker / CI/CD 可部署到阿里云）。
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+- 未登录：数据保存在手机 AsyncStorage（与原先一致）
+- 已登录：物证同步到服务器，支持图片上传
 
-## Step 1: Start Metro
+## 功能亮点（答辩 8 项）
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+| # | 亮点 | 说明 |
+|---|------|------|
+| L1 | 物品建档 | 拍照/相册 + 名称 + 位置 + 标签 |
+| L2 | 标签分类 | 预设与自定义标签，首页 Chip 筛选 |
+| L3 | 关键词搜索 | 匹配名称、位置、备注、标签 |
+| L4 | 详情大图 | 大图、位置、备注、标签一览 |
+| L5 | 本地持久化 | AsyncStorage，杀进程后仍在 |
+| L6 | 置顶 / 最近 | 置顶区 + 最近 3 条 |
+| L7 | 空状态引导 | 无数据时引导添加第一件 |
+| L8 | 编辑 / 删除 | 编辑复用表单，删除二次确认 |
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+## 环境要求
 
-```sh
-# Using npm
+- Node.js >= 22.11.0
+- Android Studio（模拟器或真机 USB 调试）
+- 可选：Xcode（iOS）
+
+## 全栈本地运行（后端 + 数据库）
+
+1. 启动 Docker Desktop
+2. 项目根目录：
+
+```bash
+copy .env.example .env
+docker compose up -d --build
+curl http://localhost:3000/health
+```
+
+3. RN 模拟器默认 API：`http://10.0.2.2:3000`（设置页可改）
+
+详见 [docs/DEPLOY_RUNBOOK.md](docs/DEPLOY_RUNBOOK.md)、[docs/BACKEND_API_SPEC.md](docs/BACKEND_API_SPEC.md)、[docs/SECRETS_CHECKLIST.md](docs/SECRETS_CHECKLIST.md)
+
+## 运行 App
+
+```bash
+npm install
 npm start
-
-# OR using Yarn
-yarn start
-```
-
-## Step 2: Build and run your app
-
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
-
-### Android
-
-```sh
-# Using npm
+# 新终端
 npm run android
-
-# OR using Yarn
-yarn android
-```
-
-### iOS
-
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
-
-```sh
-bundle install
-```
-
-Then, and every time you update your native dependencies, run:
-
-```sh
-bundle exec pod install
-```
-
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
-
-```sh
-# Using npm
+# iOS（macOS）
+cd ios && bundle exec pod install && cd ..
 npm run ios
-
-# OR using Yarn
-yarn ios
 ```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+## 项目结构
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+详见 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
 
-## Step 3: Modify your app
+## 学习文档（按阶段）
 
-Now that you have successfully run the app, let's make changes!
+| 阶段 | 文档 | 内容 |
+|------|------|------|
+| A | [docs/phases/phase-a.md](docs/phases/phase-a.md) | 导航、列表、假数据 |
+| B | [docs/phases/phase-b.md](docs/phases/phase-b.md) | 相机建档 |
+| C | [docs/phases/phase-c.md](docs/phases/phase-c.md) | 持久化、搜索、筛选 |
+| D | [docs/phases/phase-d.md](docs/phases/phase-d.md) | 编辑删除、置顶、空状态 |
+| E | [docs/phases/phase-e.md](docs/phases/phase-e.md) | 演示包、答辩 |
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+## 答辩演示
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+3 分钟台词见 [docs/DEMO.md](docs/DEMO.md)
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+App 内：**首页右上角「设置」** → 登录云同步 / 配置 API / 离线演示数据。
 
-## Congratulations! :tada:
+## 自测
 
-You've successfully run and modified your React Native App. :partying_face:
+```bash
+npm run lint
+npm test
+```
 
-### Now what?
+## 技术栈
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+- React Native 0.85 · React 19 · TypeScript
+- React Navigation · AsyncStorage · react-native-image-picker

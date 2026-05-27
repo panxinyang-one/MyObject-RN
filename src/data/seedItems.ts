@@ -1,0 +1,55 @@
+import type { Item } from '../types/item';
+
+/** 演示用一键导入数据（阶段 E） */
+export const SEED_ITEMS: Item[] = [
+  {
+    id: 'seed-1',
+    name: '氮化镓充电器',
+    location: '书桌右侧抽屉',
+    note: '65W 双 C 口',
+    imageUri: 'https://picsum.photos/seed/seed-charger/400/400',
+    tags: ['数码', '线材'],
+    isPinned: true,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'seed-2',
+    name: '校园一卡通',
+    location: '床帘挂钩袋',
+    note: '门禁+饭卡',
+    imageUri: 'https://picsum.photos/seed/seed-card/400/400',
+    tags: ['证件'],
+    isPinned: true,
+    createdAt: new Date(Date.now() - 3600000).toISOString(),
+  },
+  {
+    id: 'seed-3',
+    name: '网线转接头',
+    location: '键盘托下方小盒',
+    note: '千兆',
+    imageUri: 'https://picsum.photos/seed/seed-adapter/400/400',
+    tags: ['线材', '数码'],
+    isPinned: false,
+    createdAt: new Date(Date.now() - 7200000).toISOString(),
+  },
+  {
+    id: 'seed-4',
+    name: '感冒药',
+    location: '床头柜',
+    note: '感康，别过期',
+    imageUri: 'https://picsum.photos/seed/seed-medicine/400/400',
+    tags: ['日用品'],
+    isPinned: false,
+    createdAt: new Date(Date.now() - 86400000).toISOString(),
+  },
+  {
+    id: 'seed-5',
+    name: '四级准考证',
+    location: '钱包夹层',
+    note: '考试当天再检查',
+    imageUri: 'https://picsum.photos/seed/seed-ticket/400/400',
+    tags: ['证件'],
+    isPinned: false,
+    createdAt: new Date(Date.now() - 172800000).toISOString(),
+  },
+];

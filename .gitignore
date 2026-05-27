@@ -35,6 +35,14 @@ local.properties
 !debug.keystore
 .kotlin/
 
+# Env & backend artifacts
+.env
+backend/.env
+backend/dist
+backend/node_modules
+backend/uploads/*
+!backend/uploads/.gitkeep
+
 # node.js
 #
 node_modules/
