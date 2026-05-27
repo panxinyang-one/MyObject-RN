@@ -14,8 +14,9 @@ export function EmptyState({ onAdd }: Props) {
       <Text style={styles.desc}>
         给充电器、证件、教材拍一张照，记下放在哪。下次找不到时，搜一下就知道。
       </Text>
+      <Text style={styles.hint}>点击下方按钮即可打开相机或相册</Text>
       <Pressable style={styles.btn} onPress={onAdd}>
-        <Text style={styles.btnText}>添加第一件物品</Text>
+        <Text style={styles.btnText}>拍照添加第一件</Text>
       </Pressable>
     </View>
   );
@@ -44,7 +45,14 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     textAlign: 'center',
     lineHeight: 22,
+    marginBottom: spacing.sm,
+  },
+  hint: {
+    fontSize: 13,
+    color: colors.primary,
+    textAlign: 'center',
     marginBottom: spacing.lg,
+    fontWeight: '600',
   },
   btn: {
     backgroundColor: colors.primary,

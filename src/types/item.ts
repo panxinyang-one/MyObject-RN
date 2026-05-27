@@ -11,7 +11,7 @@ export type Item = {
 
 export type RootStackParamList = {
   Home: undefined;
-  AddItem: { itemId?: string } | undefined;
+  AddItem: { itemId?: string; openCamera?: boolean } | undefined;
   ItemDetail: { itemId: string };
   Settings: undefined;
   Login: undefined;

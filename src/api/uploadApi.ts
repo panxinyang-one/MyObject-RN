@@ -35,7 +35,7 @@ export async function uploadImageIfNeeded(imageUri: string): Promise<string> {
     headers: {
       Authorization: `Bearer ${token}`,
     },
-    body: formData,
+    body: formData as unknown as BodyInit_,
   });
 
   const text = await res.text();

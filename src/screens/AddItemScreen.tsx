@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Alert,
   Image,
@@ -19,6 +19,11 @@ import { PRESET_TAGS } from '../constants/labels';
 import { useItems } from '../context/ItemsContext';
 import { colors, radius, spacing } from '../constants/theme';
 import type { RootStackParamList } from '../types/item';
+import {
+  ensureCameraPermission,
+  ensurePhotoLibraryPermission,
+  showPermissionDeniedAlert,
+} from '../utils/mediaPermissions';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'AddItem'>;
 
@@ -34,6 +39,7 @@ export function AddItemScreen({ navigation, route }: Props) {
   const [tags, setTags] = useState<string[]>([]);
   const [customTag, setCustomTag] = useState('');
   const [saving, setSaving] = useState(false);
+  const autoCameraDone = useRef(false);
 
   useEffect(() => {
     if (editing) {
@@ -45,23 +51,59 @@ export function AddItemScreen({ navigation, route }: Props) {
     }
   }, [editing]);
 
-  const handleImageResult = (response: ImagePickerResponse) => {
-    if (response.didCancel || response.errorCode) {
+  const handleImageResult = useCallback((response: ImagePickerResponse) => {
+    if (response.didCancel) {
+      return;
+    }
+    if (response.errorCode) {
+      const detail = response.errorMessage ?? response.errorCode;
+      const hint =
+        response.errorCode === 'camera_unavailable'
+          ? '\n\n模拟器可在 AVD 设置里启用虚拟相机，或改用「相册」选图。'
+          : response.errorCode === 'permission'
+            ? '\n\n请在系统设置中为本应用开启相机/相册权限。'
+            : '';
+      Alert.alert('无法获取照片', `${detail}${hint}`);
       return;
     }
     const uri = response.assets?.[0]?.uri;
     if (uri) {
       setImageUri(uri);
     }
-  };
+  }, []);
 
-  const pickFromLibrary = () => {
+  const pickFromLibrary = useCallback(async () => {
+    const ok = await ensurePhotoLibraryPermission();
+    if (!ok) {
+      showPermissionDeniedAlert('library');
+      return;
+    }
     launchImageLibrary({ mediaType: 'photo', quality: 0.8 }, handleImageResult);
-  };
+  }, [handleImageResult]);
 
-  const takePhoto = () => {
-    launchCamera({ mediaType: 'photo', quality: 0.8, saveToPhotos: false }, handleImageResult);
-  };
+  const takePhoto = useCallback(async () => {
+    const ok = await ensureCameraPermission();
+    if (!ok) {
+      showPermissionDeniedAlert('camera');
+      return;
+    }
+    launchCamera(
+      { mediaType: 'photo', quality: 0.8, saveToPhotos: false },
+      handleImageResult,
+    );
+  }, [handleImageResult]);
+
+  useEffect(() => {
+    if (
+      !route.params?.openCamera ||
+      editId ||
+      autoCameraDone.current
+    ) {
+      return;
+    }
+    autoCameraDone.current = true;
+    takePhoto().catch(() => {});
+  }, [route.params?.openCamera, editId, takePhoto]);
 
   const toggleTag = (tag: string) => {
     setTags(prev =>
@@ -128,13 +170,16 @@ export function AddItemScreen({ navigation, route }: Props) {
       keyboardShouldPersistTaps="handled">
       <Text style={styles.label}>物证照片</Text>
       {imageUri ? (
-        <Pressable onPress={pickFromLibrary}>
+        <Pressable onPress={takePhoto}>
           <Image source={{ uri: imageUri }} style={styles.preview} />
+          <Text style={styles.retakeHint}>点击照片可重新拍摄</Text>
         </Pressable>
       ) : (
-        <View style={styles.previewPlaceholder}>
-          <Text style={styles.placeholderText}>还没有照片</Text>
-        </View>
+        <Pressable style={styles.previewPlaceholder} onPress={takePhoto}>
+          <Text style={styles.placeholderEmoji}>📷</Text>
+          <Text style={styles.placeholderText}>点这里拍照</Text>
+          <Text style={styles.placeholderSub}>或下方选择相册</Text>
+        </Pressable>
       )}
       <View style={styles.row}>
         <Pressable style={styles.secondaryBtn} onPress={takePhoto}>
@@ -256,8 +301,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  placeholderEmoji: {
+    fontSize: 40,
+    marginBottom: spacing.sm,
+  },
   placeholderText: {
+    color: colors.text,
+    fontWeight: '600',
+    fontSize: 16,
+  },
+  placeholderSub: {
     color: colors.textSecondary,
+    fontSize: 13,
+    marginTop: spacing.xs,
+  },
+  retakeHint: {
+    textAlign: 'center',
+    color: colors.textSecondary,
+    fontSize: 12,
+    marginTop: spacing.xs,
   },
   row: {
     flexDirection: 'row',

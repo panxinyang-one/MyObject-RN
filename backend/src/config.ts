@@ -14,7 +14,7 @@ function required(name: string, fallback?: string): string {
 export const config = {
   port: Number(process.env.PORT ?? 3000),
   nodeEnv: process.env.NODE_ENV ?? 'development',
-  jwtSecret: required('JWT_SECRET', 'dev-only-change-in-production'),
+  jwtSecret: required('JWT_SECRET'),
   jwtExpiresIn: process.env.JWT_EXPIRES_IN ?? '7d',
   mysql: {
     host: process.env.MYSQL_HOST ?? '127.0.0.1',

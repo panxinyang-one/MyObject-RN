@@ -128,7 +128,9 @@ export function HomeScreen({ navigation }: Props) {
       ) : null}
 
       {items.length === 0 ? (
-        <EmptyState onAdd={() => navigation.navigate('AddItem')} />
+        <EmptyState
+          onAdd={() => navigation.navigate('AddItem', { openCamera: true })}
+        />
       ) : (
         <>
           <View style={styles.searchWrap}>

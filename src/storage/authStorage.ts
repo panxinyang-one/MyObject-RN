@@ -2,21 +2,20 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { STORAGE_KEYS } from '../constants/labels';
 
 export async function saveAuth(token: string, email: string): Promise<void> {
-  await AsyncStorage.multiSet([
-    [STORAGE_KEYS.token, token],
-    [STORAGE_KEYS.userEmail, email],
-  ]);
+  await AsyncStorage.setMany({
+    [STORAGE_KEYS.token]: token,
+    [STORAGE_KEYS.userEmail]: email,
+  });
 }
 
 export async function loadAuth(): Promise<{
   token: string | null;
   email: string | null;
 }> {
-  const pairs = await AsyncStorage.multiGet([
+  const map = await AsyncStorage.getMany([
     STORAGE_KEYS.token,
     STORAGE_KEYS.userEmail,
   ]);
-  const map = Object.fromEntries(pairs);
   return {
     token: map[STORAGE_KEYS.token] ?? null,
     email: map[STORAGE_KEYS.userEmail] ?? null,
@@ -24,7 +23,7 @@ export async function loadAuth(): Promise<{
 }
 
 export async function clearAuth(): Promise<void> {
-  await AsyncStorage.multiRemove([
+  await AsyncStorage.removeMany([
     STORAGE_KEYS.token,
     STORAGE_KEYS.userEmail,
   ]);

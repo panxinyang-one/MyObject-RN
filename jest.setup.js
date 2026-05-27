@@ -4,8 +4,9 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
   setItem: jest.fn(() => Promise.resolve()),
   getItem: jest.fn(() => Promise.resolve(null)),
   removeItem: jest.fn(() => Promise.resolve()),
-  multiGet: jest.fn(() => Promise.resolve([])),
-  multiSet: jest.fn(() => Promise.resolve()),
+  getMany: jest.fn(() => Promise.resolve({})),
+  setMany: jest.fn(() => Promise.resolve()),
+  removeMany: jest.fn(() => Promise.resolve()),
 }));
 
 jest.mock('react-native-image-picker', () => ({
