@@ -50,6 +50,10 @@ jobs:
 
       - name: Unit tests
         working-directory: backend
+        env:
+          # backend/src/config.ts 会在导入时校验 JWT_SECRET
+          # 单元测试阶段给一个固定值即可
+          JWT_SECRET: ci-test-secret
         run: npm test
 
       - name: Build
