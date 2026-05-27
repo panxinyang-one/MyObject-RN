@@ -1,0 +1,2 @@
+# Shell scripts must use LF on Linux servers / GitHub Actions
+*.sh text eol=lf

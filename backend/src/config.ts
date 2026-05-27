@@ -14,7 +14,11 @@ function required(name: string, fallback?: string): string {
 export const config = {
   port: Number(process.env.PORT ?? 3000),
   nodeEnv: process.env.NODE_ENV ?? 'development',
-  jwtSecret: required('JWT_SECRET'),
+  // GitHub Actions 自动设 CI=true；本地开发请在 backend/.env 配置 JWT_SECRET
+  jwtSecret: required(
+    'JWT_SECRET',
+    process.env.CI === 'true' ? 'ci-test-secret' : undefined,
+  ),
   jwtExpiresIn: process.env.JWT_EXPIRES_IN ?? '7d',
   mysql: {
     host: process.env.MYSQL_HOST ?? '127.0.0.1',
