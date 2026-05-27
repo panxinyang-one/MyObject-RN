@@ -120,6 +120,7 @@ jobs:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
           DOCKER_IMAGE_OVERRIDE: ${{ secrets.DOCKERHUB_USERNAME }}/myobject-rn-docker:latest
+          DEPLOY_SKIP_GIT_PULL: "1"
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
@@ -127,6 +128,6 @@ jobs:
           port: ${{ secrets.SERVER_PORT || 22 }}
           command_timeout: 30m
           debug: true
-          envs: APP_DIR,DOCKERHUB_USERNAME,DOCKERHUB_TOKEN,DOCKER_IMAGE_OVERRIDE
+          envs: APP_DIR,DOCKERHUB_USERNAME,DOCKERHUB_TOKEN,DOCKER_IMAGE_OVERRIDE,DEPLOY_SKIP_GIT_PULL
           # Runs the checked-out script from the runner (no need for server git to have it first)
           script_path: deploy/scripts/deploy-remote.sh

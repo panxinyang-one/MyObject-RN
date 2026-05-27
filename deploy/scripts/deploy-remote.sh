@@ -16,12 +16,16 @@ if [[ ! -f deploy/.env.prod ]]; then
   exit 1
 fi
 
-# Keep compose + backend in sync when repo exists
-if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-  echo "=== git pull (best effort) ==="
-  git pull --ff-only origin main 2>/dev/null \
-    || git pull --ff-only origin master 2>/dev/null \
-    || echo "WARN: git pull skipped (check branch / local changes)"
+# CI 已通过 Hub 推送镜像，无需在服务器上拉 GitHub（国内常卡住数分钟）
+if [[ "${DEPLOY_SKIP_GIT_PULL:-}" == "1" ]]; then
+  echo "=== skip git pull (DEPLOY_SKIP_GIT_PULL=1) ==="
+elif git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  echo "=== git pull (max 20s, best effort) ==="
+  timeout 20 env GIT_TERMINAL_PROMPT=0 git pull --ff-only origin main \
+    || timeout 20 env GIT_TERMINAL_PROMPT=0 git pull --ff-only origin master \
+    || echo "WARN: git pull skipped (timeout or local changes)"
+else
+  echo "=== skip git pull (not a git repo) ==="
 fi
 
 set -a
@@ -57,22 +61,22 @@ try_docker_login() {
 
 try_pull_api() {
   local attempt
-  for attempt in 1 2 3; do
-    echo "=== docker compose pull api (attempt ${attempt}/3) ==="
-    if timeout 120 "${COMPOSE[@]}" pull api; then
+  for attempt in 1 2; do
+    echo "=== docker compose pull api (attempt ${attempt}/2, max 90s) ==="
+    if timeout 90 "${COMPOSE[@]}" pull api; then
       echo "pull OK"
       return 0
     fi
-    echo "pull failed, retry in 8s..."
-    sleep 8
+    echo "pull failed, retry in 5s..."
+    sleep 5
   done
   return 1
 }
 
 build_api_on_server() {
-  echo "=== fallback: docker build on server ==="
+  echo "=== fallback: docker build on server (may take 3–8 min) ==="
   if [[ ! -f backend/Dockerfile ]]; then
-    echo "ERROR: backend/Dockerfile missing — git pull may have failed"
+    echo "ERROR: backend/Dockerfile missing on server"
     exit 1
   fi
   docker build -t "$DOCKER_IMAGE" ./backend
